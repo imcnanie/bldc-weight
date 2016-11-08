@@ -47,6 +47,7 @@ void app_nunchuk_start(void);
 void app_nunchuk_configure(chuk_config *conf);
 float app_nunchuk_get_decoded_chuk(void);
 void app_nunchuk_update_output(chuck_data *data);
+void app_example_init(void);
 
 // Custom apps
 void app_sten_init(void);

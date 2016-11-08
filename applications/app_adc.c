@@ -111,6 +111,7 @@ static THD_FUNCTION(adc_thread, arg) {
 		// Read the external ADC pin and convert the value to a voltage.
 		float pwr = (float)ADC_Value[ADC_IND_EXT];
 		pwr /= 4095;
+		float front_pad = pwr;
 		pwr *= V_REG;
 
 		read_voltage = pwr;
@@ -474,10 +475,19 @@ static THD_FUNCTION(adc_thread, arg) {
 					}
 				}
 
-				if (is_reverse) {
+				/*if (is_reverse) {
 					mc_interface_set_current(-current_out);
 				} else {
 					mc_interface_set_current(current_out);
+					}*/
+				float brake_pad = (float)ADC_Value[ADC_IND_EXT2];
+				brake_pad /= 4095.0;
+				
+				if (front_pad>0.02) {
+				  mc_interface_set_current(current_out);
+				} else {
+				  if (brake_pad>0.02)
+				    mc_interface_set_current(-brake_pad*10);
 				}
 			}
 		}

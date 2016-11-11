@@ -447,6 +447,7 @@ void terminal_process_string(char *str) {
 
 		commands_printf("foc_state");
 		commands_printf("  Print some FOC state variables.\n");
+
 	} else {
 		commands_printf("Invalid command: %s\n"
 				"type help to list all available commands\n", argv[0]);

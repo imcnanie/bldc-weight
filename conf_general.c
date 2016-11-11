@@ -106,6 +106,12 @@ void conf_general_get_default_app_configuration(app_configuration *conf) {
 	conf->app_adc_conf.tc_max_diff = APPCONF_ADC_TC_MAX_DIFF;
 	conf->app_adc_conf.update_rate_hz = APPCONF_ADC_UPDATE_RATE_HZ;
 
+    //Zboard Shizzle
+    conf->app_adc_conf.z_frontpad_gain = APPCONF_ADC_Z_FRONTPAD_GAIN;
+    conf->app_adc_conf.z_frontpad_linearity = APPCONF_ADC_Z_FRONTPAD_LINEARITY;
+    conf->app_adc_conf.z_brakepad_gain = APPCONF_ADC_Z_BRAKEPAD_GAIN;
+    conf->app_adc_conf.z_brakepad_linearity = APPCONF_ADC_Z_BRAKEPAD_LINEARITY;
+
 	conf->app_uart_baudrate = APPCONF_UART_BAUDRATE;
 
 	conf->app_chuk_conf.ctrl_type = APPCONF_CHUK_CTRL_TYPE;
@@ -299,6 +305,7 @@ bool conf_general_store_app_configuration(app_configuration *conf) {
 			break;
 		}
 	}
+    
 
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_WWDG, ENABLE);
 	utils_sys_unlock_cnt();

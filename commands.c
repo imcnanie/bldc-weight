@@ -441,8 +441,11 @@ void commands_process_packet(unsigned char *data, unsigned int len) {
 		buffer_append_float32(send_buffer, mcconf.m_duty_ramp_step_rpm_lim, 1000000.0, &ind);
 		buffer_append_float32(send_buffer, mcconf.m_current_backoff_gain, 1000000.0, &ind);
 		buffer_append_uint32(send_buffer, mcconf.m_encoder_counts, &ind);
-		send_buffer[ind++] = mcconf.m_sensor_port_mode;
 
+        send_buffer[ind++] = mcconf.m_sensor_port_mode;
+
+        
+        
 		commands_send_packet(send_buffer, ind);
 		break;
 
@@ -487,6 +490,13 @@ void commands_process_packet(unsigned char *data, unsigned int len) {
 		appconf.app_adc_conf.tc_max_diff = (float)buffer_get_int32(data, &ind) / 1000.0;
 		appconf.app_adc_conf.update_rate_hz = buffer_get_uint16(data, &ind);
 
+        //Zboard shizzle
+        appconf.app_adc_conf.z_frontpad_gain = (float)buffer_get_int32(data, &ind) / 1000.0;
+        appconf.app_adc_conf.z_frontpad_linearity = (float)buffer_get_int32(data, &ind) / 1000.0;
+        appconf.app_adc_conf.z_brakepad_gain = (float)buffer_get_int32(data, &ind) / 1000.0;
+        appconf.app_adc_conf.z_brakepad_linearity = (float)buffer_get_int32(data, &ind) / 1000.0;
+
+        
 		appconf.app_uart_baudrate = buffer_get_uint32(data, &ind);
 
 		appconf.app_chuk_conf.ctrl_type = data[ind++];
@@ -514,6 +524,8 @@ void commands_process_packet(unsigned char *data, unsigned int len) {
 		app_set_configuration(&appconf);
 		timeout_configure(appconf.timeout_msec, appconf.timeout_brake_current);
 
+        
+        
 		ind = 0;
 		send_buffer[ind++] = packet_id;
 		commands_send_packet(send_buffer, ind);
@@ -566,6 +578,12 @@ void commands_process_packet(unsigned char *data, unsigned int len) {
 		buffer_append_int32(send_buffer, (int32_t)(appconf.app_adc_conf.tc_max_diff * 1000.0), &ind);
 		buffer_append_uint16(send_buffer, appconf.app_adc_conf.update_rate_hz, &ind);
 
+        // Zboard Shizzle
+        buffer_append_int32(send_buffer, (int32_t)(appconf.app_adc_conf.z_frontpad_gain * 1000.0), &ind);
+        buffer_append_int32(send_buffer, (int32_t)(appconf.app_adc_conf.z_frontpad_linearity * 1000.0), &ind);
+        buffer_append_int32(send_buffer, (int32_t)(appconf.app_adc_conf.z_brakepad_gain * 1000.0), &ind);
+        buffer_append_int32(send_buffer, (int32_t)(appconf.app_adc_conf.z_brakepad_linearity * 1000.0), &ind);
+        
 		buffer_append_uint32(send_buffer, appconf.app_uart_baudrate, &ind);
 
 		send_buffer[ind++] = appconf.app_chuk_conf.ctrl_type;
@@ -585,6 +603,8 @@ void commands_process_packet(unsigned char *data, unsigned int len) {
 		send_buffer[ind++] = appconf.app_nrf_conf.retry_delay;
 		send_buffer[ind++] = appconf.app_nrf_conf.retries;
 		send_buffer[ind++] = appconf.app_nrf_conf.channel;
+
+
 		memcpy(send_buffer + ind, appconf.app_nrf_conf.address, 3);
 		ind += 3;
 		send_buffer[ind++] = appconf.app_nrf_conf.send_crc_ack;

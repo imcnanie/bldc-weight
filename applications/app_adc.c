@@ -53,6 +53,27 @@ static volatile float decoded_level2 = 0.0;
 static volatile float read_voltage2 = 0.0;
 static volatile bool use_rx_tx_as_buttons = false;
 
+float brake_pad = 0.0;
+float front_log_pad = 1.0;
+float brake_log_pad = 1.0;
+float decrement = 0.0;
+float cur_current = 0.0;
+float last_current = 0.0;
+
+
+float kP = 0.002;
+float kI = 0.0;
+float kD = 0.0;
+float P = 0.0;
+float I = 0.0;
+float D = 0.0;
+float setpoint = 10000.0;
+float error = 0.0;
+float derivator = 0.0;
+float integrator = 0.0;
+float PID = 0.0;
+
+
 void app_adc_configure(adc_config *conf) {
 	config = *conf;
 	ms_without_power = 0.0;
@@ -480,14 +501,73 @@ static THD_FUNCTION(adc_thread, arg) {
 				} else {
 					mc_interface_set_current(current_out);
 					}*/
-				float brake_pad = (float)ADC_Value[ADC_IND_EXT2];
+				brake_pad = (float)ADC_Value[ADC_IND_EXT2];
 				brake_pad /= 4095.0;
 				
-				if (front_pad>0.02) {
+				/*if (front_pad>0.02) {
 				  mc_interface_set_current(current_out);
 				} else {
-				  if (brake_pad>0.02)
-				    mc_interface_set_current(-brake_pad*10);
+				  if (brake_pad>0.05)
+				    //mc_interface_set_current(-brake_pad*70.0);
+				    mc_interface_set_current(-brake_pad*137.0);
+				  else
+				    mc_interface_set_current(0.0);
+				    }*/
+				
+				if (front_pad > 0.02 || brake_pad > 0.02) {
+				  //mc_interface_set_current((current_out*1.2)-(brake_pad*120.0));
+				  if (front_pad > 0.0) {
+				    //front_log_pad = pow(18.0,front_pad-0.45);
+                    front_log_pad = pow(config.z_brakepad_linearity,front_pad-0.45);
+				  }
+				  if (brake_pad > 0.0) {
+				    //brake_log_pad = pow(30.0,brake_pad-0.45);
+                    brake_log_pad = pow(config.z_brakepad_linearity,brake_pad-0.45);
+				  }
+				  //cur_current = (front_log_pad*24.0)-(brake_log_pad*38.0);
+                  cur_current = (front_log_pad*config.z_frontpad_gain)-(brake_log_pad*config.z_brakepad_gain);
+				  mc_interface_set_current(cur_current);
+				 
+				  
+				  /*if (mc_interface_get_rpm() > 4000.0) {
+				    //mc_interface_set_current(0.0);
+				    //decrement += 0.009;
+				    //cur_current = cur_current/1.2;
+				    
+				    error = 4000.0-mc_interface_get_rpm();
+				    P = kP*error;
+				    
+				    D = kD*(error*derivator);
+				    derivator = error;
+				    
+				    integrator = integrator + error;
+				    I = kI*integrator;
+				    
+				    PID = P+I+D;
+				    
+				    error = 4000.0-mc_interface_get_rpm();
+				    
+
+				    if (PID < 0.0)
+				      PID = PID - 0.004*error;
+				    else
+				      PID = 0.0
+
+				    mc_interface_set_current(cur_current+PID);
+				    } else {
+				    D = 0.0;
+				    I = 0.0;
+				    integrator = 0.0;
+				    derivator = 0.0;
+				    
+				    decrement = 0.0;
+				    mc_interface_set_current(cur_current+PID);
+				    
+				    last_current = front_log_pad;
+				  }*/
+				  
+				} else {
+				  mc_interface_set_current(0.0);
 				}
 			}
 		}

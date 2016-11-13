@@ -274,11 +274,14 @@ typedef struct {
 	bool tc;
 	float tc_max_diff;
 	uint32_t update_rate_hz;
-    //Zboard
-    float z_frontpad_gain;
-    float z_frontpad_linearity;
-    float z_brakepad_gain;
-    float z_brakepad_linearity;
+
+        //Zboard
+        float z_frontpad_gain;
+        float z_frontpad_linearity;
+        float z_frontpad_offset;
+        float z_brakepad_gain;
+        float z_brakepad_linearity;
+        float z_brakepad_offset;
 } adc_config;
 
 // Nunchuk control types

@@ -80,11 +80,11 @@ static THD_FUNCTION(periodic_thread, arg) {
 
 	for(;;) {
 		if (mc_interface_get_state() == MC_STATE_RUNNING) {
-			ledpwm_set_intensity(LED_GREEN, 1.0);
-		} else {
 			ledpwm_set_intensity(LED_GREEN, 0.2);
+		} else {
+			ledpwm_set_intensity(LED_GREEN, 1.0);
 		}
-
+		
 		mc_fault_code fault = mc_interface_get_fault();
 		if (fault != FAULT_CODE_NONE) {
 			for (int i = 0;i < (int)fault;i++) {
@@ -96,7 +96,7 @@ static THD_FUNCTION(periodic_thread, arg) {
 
 			chThdSleepMilliseconds(500);
 		} else {
-			ledpwm_set_intensity(LED_RED, 0.0);
+			ledpwm_set_intensity(LED_RED, 1.0);
 		}
 
 		if (mc_interface_get_state() == MC_STATE_DETECTING) {

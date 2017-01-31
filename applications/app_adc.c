@@ -514,12 +514,8 @@ static THD_FUNCTION(adc_thread, arg) {
 	  mc_interface_set_current(0.0);
 	  }*/
 
-
-	
-	
 	if (front_pad > 0.02 || brake_pad > 0.02) {
 	  //mc_interface_set_current((current_out*1.2)-(brake_pad*120.0));
-
 
 	  // linearity^(frontpad-offset)
 	  front_log_pad = pow(config.z_frontpad_linearity,front_pad)-config.z_frontpad_offset;
